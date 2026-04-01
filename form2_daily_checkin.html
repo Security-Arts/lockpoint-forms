@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Check-in — Lockpoint</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F5F5F3;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+  .card{background:#fff;border-radius:12px;border:1px solid #E0E0DC;padding:2rem;max-width:480px;width:100%}
+  .logo{font-size:13px;font-weight:600;letter-spacing:.08em;color:#888;margin-bottom:1.5rem}
+  h1{font-size:20px;font-weight:600;color:#1A1A2E;margin-bottom:.375rem}
+  .desc{font-size:14px;color:#999;margin-bottom:1.75rem}
+  .field{margin-bottom:1.25rem}
+  label{display:block;font-size:13px;font-weight:500;color:#1A1A2E;margin-bottom:8px}
+  input,select{width:100%;padding:10px 12px;border:1px solid #DDD;border-radius:8px;font-size:14px;font-family:inherit;color:#1A1A2E;outline:none;background:#fff}
+  input:focus,select:focus{border-color:#1A1A2E}
+  .req{color:#E94560;margin-left:2px}
+  .yn{display:flex;gap:10px}
+  .yn-opt{flex:1;padding:11px;border:1px solid #DDD;border-radius:8px;text-align:center;cursor:pointer;font-size:15px;font-weight:500;color:#888;transition:all .15s;user-select:none}
+  .yn-opt:hover{border-color:#999}
+  .yn-yes.active{border-color:#27AE60;background:#E8F5E9;color:#1B5E20}
+  .yn-no.active{border-color:#E24B4A;background:#FDECEA;color:#7F0000}
+  .cond{margin-top:1rem;padding:12px;background:#FFF8E1;border-left:3px solid #EF9F27;border-radius:0 8px 8px 0;display:none}
+  .cond label{color:#7D5A00}
+  .btn{width:100%;padding:13px;background:#1A1A2E;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:.75rem;transition:opacity .15s}
+  .btn:hover{opacity:.88}
+  .success{display:none;text-align:center;padding:2.5rem 0}
+  .success-icon{width:52px;height:52px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:24px}
+  .success h2{font-size:18px;font-weight:600;color:#1A1A2E;margin-bottom:.5rem}
+  .success p{font-size:14px;color:#666}
+  .err{border-color:#E94560 !important}
+  .err-yn{outline:2px solid #E94560;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">LOCKPOINT</div>
+  <h1>Daily Execution Check</h1>
+  <p class="desc">Quick check — 5 seconds.</p>
+
+  <div id="form-body">
+    <div class="field">
+      <label>Name <span class="req">*</span></label>
+      <input type="text" id="name" placeholder="Your name or nickname">
+    </div>
+
+    <div class="field">
+      <label>Day <span class="req">*</span></label>
+      <select id="day">
+        <option value="">Select day...</option>
+        <option>Day 1</option><option>Day 2</option><option>Day 3</option>
+        <option>Day 4</option><option>Day 5</option><option>Day 6</option><option>Day 7</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Did you complete your defined daily action? <span class="req">*</span></label>
+      <div class="yn" id="q1-group">
+        <div class="yn-opt yn-yes" onclick="pick('q1','yes')">Yes</div>
+        <div class="yn-opt yn-no"  onclick="pick('q1','no')">No</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Are you still on track for your 7-day goal? <span class="req">*</span></label>
+      <div class="yn" id="q2-group">
+        <div class="yn-opt yn-yes" onclick="pick('q2','yes')">Yes</div>
+        <div class="yn-opt yn-no"  onclick="pick('q2','no')">No</div>
+      </div>
+    </div>
+
+    <div class="cond" id="blocker">
+      <label>What blocked you today?</label>
+      <select id="blocker-val" style="margin-top:6px">
+        <option value="">Select...</option>
+        <option>No time</option>
+        <option>Got stuck</option>
+        <option>Lost focus</option>
+        <option>Priorities changed</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="submit()">Submit check-in →</button>
+  </div>
+
+  <div class="success" id="success">
+    <div class="success-icon">✓</div>
+    <h2>Check-in recorded.</h2>
+    <p>See you tomorrow.</p>
+  </div>
+</div>
+
+<script>
+var q1='',q2='';
+function pick(q,val){
+  if(q==='q1'){
+    q1=val;
+    document.querySelectorAll('#q1-group .yn-opt').forEach(function(el){el.classList.remove('active')});
+    document.querySelector('#q1-group .yn-'+val).classList.add('active');
+  } else {
+    q2=val;
+    document.querySelectorAll('#q2-group .yn-opt').forEach(function(el){el.classList.remove('active')});
+    document.querySelector('#q2-group .yn-'+val).classList.add('active');
+  }
+  document.getElementById('blocker').style.display=(q1==='no'||q2==='no')?'block':'none';
+  document.getElementById('q1-group').classList.remove('err-yn');
+  document.getElementById('q2-group').classList.remove('err-yn');
+}
+function submit(){
+  var ok=true;
+  var name=document.getElementById('name');
+  var day=document.getElementById('day');
+  name.classList.remove('err'); day.classList.remove('err');
+  if(!name.value.trim()){name.classList.add('err');ok=false;}
+  if(!day.value){day.classList.add('err');ok=false;}
+  if(!q1){document.getElementById('q1-group').classList.add('err-yn');ok=false;}
+  if(!q2){document.getElementById('q2-group').classList.add('err-yn');ok=false;}
+  if(!ok)return;
+  document.getElementById('form-body').style.display='none';
+  document.getElementById('success').style.display='block';
+}
+</script>
+</body>
+</html>

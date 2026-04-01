@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>7-Day Execution Commitment — Lockpoint</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F5F5F3;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+  .card{background:#fff;border-radius:12px;border:1px solid #E0E0DC;padding:2rem;max-width:520px;width:100%}
+  .logo{font-size:13px;font-weight:600;letter-spacing:.08em;color:#888;margin-bottom:1.5rem}
+  h1{font-size:22px;font-weight:600;color:#1A1A2E;margin-bottom:.5rem}
+  .desc{font-size:14px;color:#666;line-height:1.6;margin-bottom:.25rem}
+  .rule{font-size:13px;color:#E94560;font-weight:500;margin-bottom:1.75rem}
+  .field{margin-bottom:1.25rem}
+  label{display:block;font-size:13px;font-weight:500;color:#1A1A2E;margin-bottom:6px}
+  .hint{font-size:12px;color:#999;margin-bottom:6px;font-style:italic}
+  input,textarea{width:100%;padding:10px 12px;border:1px solid #DDD;border-radius:8px;font-size:14px;font-family:inherit;color:#1A1A2E;outline:none;transition:border-color .15s}
+  input:focus,textarea:focus{border-color:#1A1A2E}
+  textarea{resize:vertical;min-height:80px}
+  .req{color:#E94560;margin-left:2px}
+  .btn{width:100%;padding:13px;background:#1A1A2E;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:.5rem;transition:opacity .15s}
+  .btn:hover{opacity:.88}
+  .success{display:none;text-align:center;padding:2rem 0}
+  .success-icon{width:52px;height:52px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:24px}
+  .success h2{font-size:18px;font-weight:600;color:#1A1A2E;margin-bottom:.5rem}
+  .success p{font-size:14px;color:#666;line-height:1.6}
+  .err{border-color:#E94560 !important}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">LOCKPOINT</div>
+  <h1>7-Day Execution Commitment</h1>
+  <p class="desc">Define one clear goal for the next 7 days and the daily action that leads to it. Keep it specific and measurable.</p>
+  <p class="rule">This only works if you check in daily.</p>
+
+  <div id="form-body">
+    <div class="field">
+      <label>Name <span class="req">*</span></label>
+      <input type="text" id="name" placeholder="Your name or nickname">
+    </div>
+    <div class="field">
+      <label>Preferred contact method <span class="req">*</span></label>
+      <div class="hint">Used only if we need to follow up on your commitment</div>
+      <input type="text" id="contact" placeholder="Email / Slack / Discord / Telegram">
+    </div>
+    <div class="field">
+      <label>What is your 7-day goal? <span class="req">*</span></label>
+      <div class="hint">Example: Launch landing page / Send 50 emails / Finish 3 briefs</div>
+      <textarea id="goal" rows="3" placeholder="Describe your goal..."></textarea>
+    </div>
+    <div class="field">
+      <label>What is your daily action? <span class="req">*</span></label>
+      <div class="hint">Must be something you can clearly say YES or NO to each day</div>
+      <input type="text" id="action" placeholder="Example: Send 10 emails / Write 1 section / Complete 1 brief">
+    </div>
+    <div class="field">
+      <label>Daily deadline <span class="req">*</span></label>
+      <div class="hint">Example: 20:00 each day</div>
+      <input type="text" id="deadline" placeholder="20:00">
+    </div>
+    <button class="btn" onclick="submit()">Lock commitment →</button>
+  </div>
+
+  <div class="success" id="success">
+    <div class="success-icon">✓</div>
+    <h2>Commitment locked.</h2>
+    <p>Your daily check-in link will be sent before Day 1.<br>It takes 5 seconds. Show up.</p>
+  </div>
+</div>
+
+<script>
+function submit(){
+  var fields=['name','contact','goal','action','deadline'];
+  var ok=true;
+  fields.forEach(function(id){
+    var el=document.getElementById(id);
+    el.classList.remove('err');
+    if(!el.value.trim()){el.classList.add('err');ok=false;}
+  });
+  if(!ok)return;
+  document.getElementById('form-body').style.display='none';
+  document.getElementById('success').style.display='block';
+}
+</script>
+</body>
+</html>
