@@ -21,11 +21,13 @@
   .req{color:#E94560;margin-left:2px}
   .btn{width:100%;padding:13px;background:#1A1A2E;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:.5rem;transition:opacity .15s}
   .btn:hover{opacity:.88}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
   .success{display:none;text-align:center;padding:2rem 0}
   .success-icon{width:52px;height:52px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:24px}
   .success h2{font-size:18px;font-weight:600;color:#1A1A2E;margin-bottom:.5rem}
   .success p{font-size:14px;color:#666;line-height:1.6}
   .err{border-color:#E94560 !important}
+  .error-msg{font-size:12px;color:#E94560;margin-top:8px;display:none}
 </style>
 </head>
 <body>
@@ -60,7 +62,8 @@
       <div class="hint">Example: 20:00 each day</div>
       <input type="text" id="deadline" placeholder="20:00">
     </div>
-    <button class="btn" onclick="submit()">Lock commitment →</button>
+    <div class="error-msg" id="error-msg">Something went wrong. Please try again.</div>
+    <button class="btn" id="submit-btn" onclick="submitForm()">Lock commitment →</button>
   </div>
 
   <div class="success" id="success">
@@ -71,17 +74,47 @@
 </div>
 
 <script>
-function submit(){
-  var fields=['name','contact','goal','action','deadline'];
-  var ok=true;
-  fields.forEach(function(id){
-    var el=document.getElementById(id);
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw64HtbHn7Vp4jDhHtI713rGeRH3iXo3fr6rz4qf4VC4B7e6fMb4hY1_SUCDP9othlqMA/exec";
+
+function submitForm() {
+  var fields = ['name','contact','goal','action','deadline'];
+  var ok = true;
+  fields.forEach(function(id) {
+    var el = document.getElementById(id);
     el.classList.remove('err');
-    if(!el.value.trim()){el.classList.add('err');ok=false;}
+    if (!el.value.trim()) { el.classList.add('err'); ok = false; }
   });
-  if(!ok)return;
-  document.getElementById('form-body').style.display='none';
-  document.getElementById('success').style.display='block';
+  if (!ok) return;
+
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  document.getElementById('error-msg').style.display = 'none';
+
+  var data = {
+    formType: "commitment",
+    name: document.getElementById('name').value.trim(),
+    contact: document.getElementById('contact').value.trim(),
+    goal: document.getElementById('goal').value.trim(),
+    action: document.getElementById('action').value.trim(),
+    deadline: document.getElementById('deadline').value.trim()
+  };
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  })
+  .then(function() {
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Lock commitment →';
+    document.getElementById('error-msg').style.display = 'block';
+  });
 }
 </script>
 </body>
