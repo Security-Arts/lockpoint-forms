@@ -25,12 +25,14 @@
   .cond label{color:#7D5A00}
   .btn{width:100%;padding:13px;background:#1A1A2E;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:500;cursor:pointer;margin-top:.75rem;transition:opacity .15s}
   .btn:hover{opacity:.88}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
   .success{display:none;text-align:center;padding:2.5rem 0}
   .success-icon{width:52px;height:52px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:24px}
   .success h2{font-size:18px;font-weight:600;color:#1A1A2E;margin-bottom:.5rem}
   .success p{font-size:14px;color:#666}
   .err{border-color:#E94560 !important}
   .err-yn{outline:2px solid #E94560;border-radius:8px}
+  .error-msg{font-size:12px;color:#E94560;margin-top:8px;display:none}
 </style>
 </head>
 <body>
@@ -82,7 +84,8 @@
       </select>
     </div>
 
-    <button class="btn" onclick="submit()">Submit check-in →</button>
+    <div class="error-msg" id="error-msg">Something went wrong. Please try again.</div>
+    <button class="btn" id="submit-btn" onclick="submitForm()">Submit check-in →</button>
   </div>
 
   <div class="success" id="success">
@@ -93,33 +96,64 @@
 </div>
 
 <script>
-var q1='',q2='';
-function pick(q,val){
-  if(q==='q1'){
-    q1=val;
-    document.querySelectorAll('#q1-group .yn-opt').forEach(function(el){el.classList.remove('active')});
-    document.querySelector('#q1-group .yn-'+val).classList.add('active');
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw64HtbHn7Vp4jDhHtI713rGeRH3iXo3fr6rz4qf4VC4B7e6fMb4hY1_SUCDP9othlqMA/exec";
+var q1 = '', q2 = '';
+
+function pick(q, val) {
+  if (q === 'q1') {
+    q1 = val;
+    document.querySelectorAll('#q1-group .yn-opt').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelector('#q1-group .yn-' + val).classList.add('active');
   } else {
-    q2=val;
-    document.querySelectorAll('#q2-group .yn-opt').forEach(function(el){el.classList.remove('active')});
-    document.querySelector('#q2-group .yn-'+val).classList.add('active');
+    q2 = val;
+    document.querySelectorAll('#q2-group .yn-opt').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelector('#q2-group .yn-' + val).classList.add('active');
   }
-  document.getElementById('blocker').style.display=(q1==='no'||q2==='no')?'block':'none';
+  document.getElementById('blocker').style.display = (q1==='no' || q2==='no') ? 'block' : 'none';
   document.getElementById('q1-group').classList.remove('err-yn');
   document.getElementById('q2-group').classList.remove('err-yn');
 }
-function submit(){
-  var ok=true;
-  var name=document.getElementById('name');
-  var day=document.getElementById('day');
+
+function submitForm() {
+  var ok = true;
+  var name = document.getElementById('name');
+  var day = document.getElementById('day');
   name.classList.remove('err'); day.classList.remove('err');
-  if(!name.value.trim()){name.classList.add('err');ok=false;}
-  if(!day.value){day.classList.add('err');ok=false;}
-  if(!q1){document.getElementById('q1-group').classList.add('err-yn');ok=false;}
-  if(!q2){document.getElementById('q2-group').classList.add('err-yn');ok=false;}
-  if(!ok)return;
-  document.getElementById('form-body').style.display='none';
-  document.getElementById('success').style.display='block';
+  if (!name.value.trim()) { name.classList.add('err'); ok = false; }
+  if (!day.value) { day.classList.add('err'); ok = false; }
+  if (!q1) { document.getElementById('q1-group').classList.add('err-yn'); ok = false; }
+  if (!q2) { document.getElementById('q2-group').classList.add('err-yn'); ok = false; }
+  if (!ok) return;
+
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  document.getElementById('error-msg').style.display = 'none';
+
+  var data = {
+    formType: "checkin",
+    name: name.value.trim(),
+    day: day.value,
+    completed: q1 === 'yes' ? 'Yes' : 'No',
+    onTrack: q2 === 'yes' ? 'Yes' : 'No',
+    blocker: document.getElementById('blocker-val').value || ''
+  };
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  })
+  .then(function() {
+    document.getElementById('form-body').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Submit check-in →';
+    document.getElementById('error-msg').style.display = 'block';
+  });
 }
 </script>
 </body>
