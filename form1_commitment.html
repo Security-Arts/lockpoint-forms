@@ -74,7 +74,7 @@
 </div>
 
 <script>
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw64HtbHn7Vp4jDhHtI713rGeRH3iXo3fr6rz4qf4VC4B7e6fMb4hY1_SUCDP9othlqMA/exec";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz10GXpfUrWNYXRw2qf2Li-VErtOlxadtoguz1sDd49rflvr9W9-nUkf0PAK8UPGi3Fgg/exec";
 
 function submitForm() {
   var fields = ['name','contact','goal','action','deadline'];
@@ -91,20 +91,19 @@ function submitForm() {
   btn.textContent = 'Saving...';
   document.getElementById('error-msg').style.display = 'none';
 
-  var data = {
+  var params = new URLSearchParams({
     formType: "commitment",
     name: document.getElementById('name').value.trim(),
     contact: document.getElementById('contact').value.trim(),
     goal: document.getElementById('goal').value.trim(),
     action: document.getElementById('action').value.trim(),
     deadline: document.getElementById('deadline').value.trim()
-  };
+  });
 
   fetch(SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(data)
+    body: params
   })
   .then(function() {
     document.getElementById('form-body').style.display = 'none';
