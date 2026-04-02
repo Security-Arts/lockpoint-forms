@@ -96,7 +96,7 @@
 </div>
 
 <script>
-var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz10GXpfUrWNYXRw2qf2Li-VErtOlxadtoguz1sDd49rflvr9W9-nUkf0PAK8UPGi3Fgg/exec";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxOAygI1jWQuGXcYr6SLetw51ZpFkPVwwov-Oce3e2XEnhCpCgo9SzKOsr6O5TIEBuPww/exec";
 var q1 = '', q2 = '';
 
 function pick(q, val) {
@@ -130,20 +130,19 @@ function submitForm() {
   btn.textContent = 'Saving...';
   document.getElementById('error-msg').style.display = 'none';
 
-  var data = {
+  var params = new URLSearchParams({
     formType: "checkin",
     name: name.value.trim(),
     day: day.value,
     completed: q1 === 'yes' ? 'Yes' : 'No',
     onTrack: q2 === 'yes' ? 'Yes' : 'No',
     blocker: document.getElementById('blocker-val').value || ''
-  };
+  });
 
   fetch(SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(data)
+    body: params
   })
   .then(function() {
     document.getElementById('form-body').style.display = 'none';
